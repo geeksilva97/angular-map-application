@@ -10,6 +10,8 @@ declare var google: any;
 })
 export class HomeMapComponent implements OnInit {
 
+  isLoading: boolean = false;
+
   constructor() { }
 
   ngOnInit(): void {
