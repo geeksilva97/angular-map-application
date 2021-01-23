@@ -11,16 +11,36 @@ declare var google: any;
 export class HomeMapComponent implements OnInit {
 
   isLoading: boolean = false;
+  step: number = 0;
 
   constructor() { }
 
   ngOnInit(): void {
-    console.log(google);
     let startPoint = { lat: -25.43615638835874, lng: -49.2589101856207 };
-    let map = new google.maps.Map(document.querySelector('#map'), {
+    new google.maps.Map(document.querySelector('#map'), {
       center: startPoint,
       zoom: 15
-  });
+    });
+  }
+
+  newRoute() {
+    this.step = 0;
+  }
+
+  updateRoute() {
+    this.isLoading = true;
+    setTimeout(() => {
+      this.isLoading = false;
+      this.step = 1;
+    }, 1000);
+  }
+
+  calculateRoute() {
+    this.isLoading = true;
+    setTimeout(() => {
+      this.isLoading = false;
+      this.step = 1;
+    }, 1000);
   }
 
 }
