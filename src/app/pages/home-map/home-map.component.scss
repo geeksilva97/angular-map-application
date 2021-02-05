@@ -55,7 +55,16 @@
       display: flex;
       justify-content: space-between;
       padding: 15px 15px;
-  
+
+      &.driving {
+        background-color: #ff000033;
+      }
+      
+      &.flying {
+        background-color: #0A5E2B;
+        color: #fff;
+      }
+
       & > div{
         display: flex;
         flex-direction: column;
