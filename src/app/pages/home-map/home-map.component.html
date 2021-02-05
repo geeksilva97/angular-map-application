@@ -18,15 +18,37 @@
           <p class="bolder center subtitle">Vamos começar!</p>
 
           <section class="fields">
-            <mat-form-field appearance="legacy">
-              <mat-label>Digite o local de partida</mat-label>
-              <input matInput placeholder="Placeholder">
+            <mat-form-field class="example-full-width">
+              <mat-label>Local de partida</mat-label>
+              <input type="text"
+                     placeholder="Local de partida"
+                     aria-label="Local de partida"
+                     matInput
+                     name="from"
+                     [formControl]="fromControl"
+                     [matAutocomplete]="auto">
+              <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+                <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+                  {{option.description}}
+                </mat-option>
+              </mat-autocomplete>
             </mat-form-field>
   
-            <mat-form-field appearance="legacy">
-              <mat-label>Digite o local de partida</mat-label>
-              <input matInput placeholder="Placeholder">
+            <mat-form-field class="example-full-width">
+              <mat-label>Local de chegada</mat-label>
+              <input type="text"
+                     placeholder="Local de chegada"
+                     aria-label="Local de chegada"
+                     matInput
+                     [formControl]="myControl"
+                     [matAutocomplete]="auto">
+              <mat-autocomplete #auto="matAutocomplete">
+                <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+                  {{option.description}}
+                </mat-option>
+              </mat-autocomplete>
             </mat-form-field>
+
           </section>
           
         </div>
@@ -56,10 +78,10 @@
             </mat-form-field>
           </section>
 
-          <section class="data" style="margin-left: -20px; margin-right: -20px;">
+          <section class="data driving" style="margin-left: -20px; margin-right: -20px;">
             <div>
               <mat-icon aria-hidden="false" aria-label="Example home icon">timer</mat-icon>
-              <p>5h e 48min</p>
+              <p>{{ statusDriving.duration }}</p>
             </div>
 
             <div>
@@ -69,7 +91,24 @@
 
             <div>
               <mat-icon aria-hidden="false" aria-label="Example home icon">moving</mat-icon>
-              <p>441,97Km</p>
+              <p>{{ statusDriving.distance.toFixed(2) }} Km</p>
+            </div>
+          </section>
+
+          <section class="data flying" style="margin-left: -20px; margin-right: -20px;">
+            <div>
+              <mat-icon aria-hidden="false" aria-label="Example home icon">timer</mat-icon>
+              <p>{{statusFlying.duration}}</p>
+            </div>
+
+            <div>
+              <p>R$ <span class="hight-bolder">100,00</span></p>
+              <p>Custo Viagem</p>
+            </div>
+
+            <div>
+              <mat-icon aria-hidden="false" aria-label="Example home icon">moving</mat-icon>
+              <p>{{statusFlying.distance.toFixed(2)}} Km</p>
             </div>
           </section>
 
