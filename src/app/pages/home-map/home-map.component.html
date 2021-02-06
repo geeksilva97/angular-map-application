@@ -18,7 +18,7 @@
           <p class="bolder center subtitle">Vamos começar!</p>
 
           <section class="fields">
-            <mat-form-field class="example-full-width">
+            <mat-form-field appearance="fill" class="example-full-width">
               <mat-label>Local de partida</mat-label>
               <input type="text"
                      placeholder="Local de partida"
@@ -34,7 +34,7 @@
               </mat-autocomplete>
             </mat-form-field>
   
-            <mat-form-field class="example-full-width">
+            <mat-form-field appearance="fill" class="example-full-width">
               <mat-label>Local de chegada</mat-label>
               <input type="text"
                      placeholder="Local de chegada"
@@ -47,6 +47,17 @@
                   {{option.description}}
                 </mat-option>
               </mat-autocomplete>
+            </mat-form-field>
+
+
+
+            <mat-form-field appearance="fill">
+              <mat-label>Aeronave</mat-label>
+              <mat-select [(value)]="selectedAirship">
+                <mat-option *ngFor="let airship of airships" [value]="airship">
+                  {{airship.name}}
+                </mat-option>
+              </mat-select>
             </mat-form-field>
 
           </section>
@@ -67,14 +78,23 @@
           <p>Para calcular a sua viagem, será necessário preencher os campos abaixo:</p>
 
           <section class="fields">
-            <mat-form-field appearance="legacy">
-              <mat-label>Digite o local de partida</mat-label>
-              <input matInput placeholder="Placeholder">
+            <mat-form-field appearance="fill">
+              <mat-label>Saindo de</mat-label>
+              <input disabled [value]="fromControl.value.description" matInput placeholder="Placeholder">
             </mat-form-field>
   
-            <mat-form-field appearance="legacy">
-              <mat-label>Digite o local de partida</mat-label>
-              <input matInput placeholder="Placeholder">
+            <mat-form-field appearance="fill">
+              <mat-label>Chegando em</mat-label>
+              <input disabled [value]="fromControl.value.description" matInput placeholder="Placeholder">
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Aeronave</mat-label>
+              <mat-select disabled  [(value)]="selectedAirship">
+                <mat-option *ngFor="let airship of airships" [value]="airship">
+                  {{airship.name}}
+                </mat-option>
+              </mat-select>
             </mat-form-field>
           </section>
 
@@ -121,58 +141,5 @@
         </div>
       </div>
     </mat-card>
-
-
-    <!-- <mat-card [class.mat-elevation-z8]="true">
-      <div class="card-overlay" *ngIf="isLoading">
-        <mat-spinner
-        strokeWidth="2"
-        diameter="50"
-        ></mat-spinner>
-      </div>
-      <div class="content">
-        <h1 class="title bolder">CALCULAR VIAGEM</h1>
-        <p>Para calcular a sua viagem, será necessário preencher os campos abaixo:</p>
-
-        <section class="fields">
-          <mat-form-field appearance="legacy">
-            <mat-label>Digite o local de partida</mat-label>
-            <input matInput placeholder="Placeholder">
-          </mat-form-field>
-
-          <mat-form-field appearance="legacy">
-            <mat-label>Digite o local de partida</mat-label>
-            <input matInput placeholder="Placeholder">
-          </mat-form-field>
-        </section>
-      </div>
-
-      <mat-tab-group>
-        <mat-tab label="Rota mais rápida">
-          <section class="data">
-            <div>
-              <mat-icon aria-hidden="false" aria-label="Example home icon">timer</mat-icon>
-              <p>5h e 48min</p>
-            </div>
-
-            <div>
-              <p>R$ <span class="hight-bolder">100,00</span></p>
-              <p>Custo Viagem</p>
-            </div>
-
-            <div>
-              <mat-icon aria-hidden="false" aria-label="Example home icon">moving</mat-icon>
-              <p>441,97Km</p>
-            </div>
-          </section>
-
-          <mat-divider></mat-divider>
-
-          
-
-        </mat-tab>
-        <mat-tab label="Rota mais curta"> Content 2 </mat-tab>
-      </mat-tab-group>
-    </mat-card> -->
   </div>
 </div>

@@ -3,6 +3,7 @@ import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { startWith, map } from 'rxjs/operators';
 import { Airship } from 'src/models/airship.interface';
+import {MatSnackBar} from '@angular/material/snack-bar';
 import * as moment from 'moment';
 
 
@@ -53,7 +54,7 @@ export class HomeMapComponent implements OnInit {
       }
     }
   ];
-
+  selectedAirship: Airship;
   airships: Airship[] = [
     {
       name: 'Airbus H125',
@@ -110,7 +111,7 @@ export class HomeMapComponent implements OnInit {
   options: string[] = ['One', 'Two', 'Three'];
   filteredOptions: Observable<string[]>;
 
-  constructor() { }
+  constructor(private _snackBar: MatSnackBar) { }
 
   ngOnInit(): void {
     let startPoint = { lat: -25.43615638835874, lng: -49.2589101856207 };
@@ -147,6 +148,7 @@ export class HomeMapComponent implements OnInit {
   }
 
   private _filter(value: string): any[] {
+    console.log({value});
     const filterValue = value ? value.toLowerCase() : '';
     return this.places.filter(place => place.description.toLowerCase().includes(filterValue));
   }
@@ -169,6 +171,21 @@ export class HomeMapComponent implements OnInit {
 
     const from = this.fromControl.value;
     const to = this.myControl.value;
+    console.log({from, to});
+    if(!from || !to) {
+      this._snackBar.open('Informe o local de partida e de destino.', 'OK',{
+        duration: 2000
+      });
+
+      return;
+    }
+
+    if(!this.selectedAirship) {
+      this._snackBar.open('Selecione a aeronave', 'OK', {
+        duration: 2000,
+      });
+      return;
+    }
 
     this.directionsRenderer.setMap(this.map);
 
@@ -192,15 +209,19 @@ export class HomeMapComponent implements OnInit {
 
 
     this.polylineAirship = new google.maps.Polyline({
-      map: this.map,
       path: [ from.position, to.position ],
       strokeColor: '#0A5E2B'
     });
 
-    const airPlane = this.airships[0];
-
     this.statusFlying.distance = google.maps.geometry.spherical.computeLength( this.polylineAirship.getPath() )/1000;
-    const d=this.statusFlying.distance/airPlane.maximumSpeed;
+
+    if(this.statusFlying.distance > this.selectedAirship.range) {
+      this._snackBar.open('A aeronave selecionada não tem autonomia necessária para esta viagem.');
+      return;
+    }
+
+    this.polylineAirship.setMap( this.map );
+    const d=this.statusFlying.distance/this.selectedAirship.maximumSpeed;
     const duration = moment.duration(d, 'hours');
     this.statusFlying.duration = `${duration.hours()} h ${duration.minutes()} min`
 
