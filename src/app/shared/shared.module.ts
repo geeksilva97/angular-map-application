@@ -11,7 +11,8 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-
+import { MatSelectModule } from "@angular/material/select";
+import { MatSnackBarModule } from "@angular/material/snack-bar";
 
 @NgModule({
   declarations: [],
@@ -30,7 +31,9 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     MatDividerModule,
     MatButtonModule,
     MatProgressSpinnerModule,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    MatSelectModule,
+    MatSnackBarModule
   ]
 })
 export class SharedModule { }
