@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
-import { startWith, map } from 'rxjs/operators';
+import { startWith, map, tap } from 'rxjs/operators';
 import { Airship } from 'src/models/airship.interface';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import * as moment from 'moment';
+import { IbgeService } from 'src/app/shared/ibge.service';
+import { Municipio } from 'src/models/municipio.interface';
 
 
 declare var google: any;
@@ -106,30 +108,46 @@ export class HomeMapComponent implements OnInit {
     }
   ];
 
-  fromControl = new FormControl();
-  myControl = new FormControl();
+  locationFromControl = new FormControl();
+  locationToControl = new FormControl();
   options: string[] = ['One', 'Two', 'Three'];
-  filteredOptions: Observable<string[]>;
+  filteredOptionsFrom: Observable<Municipio[]>;
+  filteredOptionsTo: Observable<Municipio[]>;
 
-  constructor(private _snackBar: MatSnackBar) { }
+  municipios: Municipio[] = [];
+
+  constructor(
+    private _snackBar: MatSnackBar,
+    private ibgeService: IbgeService
+  ) { }
 
   ngOnInit(): void {
+
+    this.ibgeService.citiesByState()
+      .subscribe(municipios => {
+        this.municipios = municipios;
+        console.log({municipios});
+      }, err => {
+        alert('Houve um erro inesperado ao listar os municípios');
+      });
+
     let startPoint = { lat: -25.43615638835874, lng: -49.2589101856207 };
     this.map = new google.maps.Map(document.querySelector('#map'), {
       center: startPoint,
       zoom: 15
     });
 
-    this.filteredOptions = this.myControl.valueChanges
+    this.filteredOptionsFrom = this.locationFromControl.valueChanges
       .pipe(
         startWith(''),
         map(value => this._filter(value))
       );
 
-      this.filteredOptions = this.fromControl.valueChanges
+      this.filteredOptionsTo = this.locationToControl.valueChanges
       .pipe(
         startWith(''),
-        map(value => this._filter(value))
+        map(value => this._filter(value)),
+        tap(items => console.log({items}))
       );
 
 
@@ -143,14 +161,14 @@ export class HomeMapComponent implements OnInit {
     });
   }
 
-  displayFn(place: any): string {
-    return place && place.description ? place.description : '';
+  displayFn(municipio: Municipio): string {
+    return municipio && municipio.nome ? `${municipio.nome} - ${municipio.microrregiao.mesorregiao.UF.sigla}` : '';
   }
 
-  private _filter(value: string): any[] {
-    console.log({value});
+  private _filter(value: string): Municipio[] {
     const filterValue = value ? value.toLowerCase() : '';
-    return this.places.filter(place => place.description.toLowerCase().includes(filterValue));
+    console.log({filterValue});
+    return this.municipios.filter(municipio => municipio.nome.trim().toLowerCase().includes(filterValue));
   }
 
   newRoute() {
@@ -169,8 +187,8 @@ export class HomeMapComponent implements OnInit {
 
   calculateRoute() {
 
-    const from = this.fromControl.value;
-    const to = this.myControl.value;
+    const from = this.locationFromControl.value;
+    const to = this.locationToControl.value;
     console.log({from, to});
     if(!from || !to) {
       this._snackBar.open('Informe o local de partida e de destino.', 'OK',{
