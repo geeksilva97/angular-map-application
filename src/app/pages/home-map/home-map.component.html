@@ -51,23 +51,6 @@
               </mat-autocomplete>
             </mat-form-field>
   
-            <!-- <mat-form-field appearance="fill" class="example-full-width">
-              <mat-label>Local de chegada</mat-label>
-              <input type="text"
-                     placeholder="Local de chegada"
-                     aria-label="Local de chegada"
-                     matInput
-                     [formControl]="locationToControl"
-                     [matAutocomplete]="auto">
-              <mat-autocomplete #auto="matAutocomplete">
-                <mat-option *ngFor="let option of filteredOptionsTo | async" [value]="option">
-                  {{option.description}}
-                </mat-option>
-              </mat-autocomplete>
-            </mat-form-field> -->
-
-
-
             <mat-form-field appearance="fill">
               <mat-label>Aeronave</mat-label>
               <mat-select [(value)]="selectedAirship">
@@ -97,12 +80,12 @@
           <section class="fields">
             <mat-form-field appearance="fill">
               <mat-label>Saindo de</mat-label>
-              <input disabled [value]="locationFromControl.value.description" matInput placeholder="Placeholder">
+              <input disabled [value]="locationFromControl.value" matInput placeholder="Origem">
             </mat-form-field>
   
             <mat-form-field appearance="fill">
               <mat-label>Chegando em</mat-label>
-              <input disabled [value]="locationToControl.value.description" matInput placeholder="Placeholder">
+              <input disabled [value]="locationToControl.value" matInput placeholder="Destino">
             </mat-form-field>
 
             <mat-form-field appearance="fill">
@@ -144,7 +127,7 @@
         </div>
 
         <div class="buttons">
-          <button mat-flat-button color="primary" (click)="updateRoute()">Atualizar</button>
+          <!-- <button mat-flat-button color="primary" (click)="updateRoute()">Atualizar</button> -->
           <button mat-flat-button color="primary" (click)="newRoute()">Nova rota</button>
         </div>
       </div>

@@ -4,17 +4,23 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Municipio } from 'src/models/municipio.interface';
 
+declare var google: any;
+
 @Injectable({
   providedIn: 'root'
 })
 export class IbgeService {
 
+  geocoder: any;
+
   constructor(
     private http: HttpClient
-  ) { }
+  ) {
+    this.geocoder = new google.maps.Geocoder();
+  }
 
   citiesByState(): Observable<Municipio[]> {
-    return this.http.get(encodeURI('https://servicodados.ibge.gov.br/api/v1/localidades/estados/42/municipios'), {
+    return this.http.get(encodeURI('https://servicodados.ibge.gov.br/api/v1/localidades/estados/42|41|33|51|31/municipios'), {
       // return this.http.get(encodeURI('https://servicodados.ibge.gov.br/api/v1/localidades/estados/42|41|33|51|31/municipios'), {
       observe: 'body'
     }).pipe(
@@ -22,5 +28,14 @@ export class IbgeService {
         return municipios.map(municipio => municipio as Municipio)
       })
     );
+  }
+
+  async geocodeAddress(address: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.geocoder.geocode({ address: address }, (results, status) => {
+        if (status === "OK") resolve(results);
+        reject(status);
+      });
+    });
   }
 }
