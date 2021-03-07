@@ -25,32 +25,32 @@
                      aria-label="Local de partida"
                      matInput
                      name="from"
-                     [formControl]="fromControl"
-                     [matAutocomplete]="auto">
-              <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
-                <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
-                  {{option.description}}
+                     [formControl]="locationFromControl"
+                     [matAutocomplete]="autoFrom">
+              <mat-autocomplete #autoFrom="matAutocomplete">
+                <mat-option *ngFor="let municipio of filteredOptionsFrom | async" [value]="municipio.nome + ' - ' + municipio.microrregiao.mesorregiao.UF.sigla">
+                  {{ municipio.nome }} - {{municipio.microrregiao.mesorregiao.UF.sigla}}
                 </mat-option>
               </mat-autocomplete>
             </mat-form-field>
-  
+
+
             <mat-form-field appearance="fill" class="example-full-width">
               <mat-label>Local de chegada</mat-label>
               <input type="text"
                      placeholder="Local de chegada"
                      aria-label="Local de chegada"
                      matInput
-                     [formControl]="myControl"
-                     [matAutocomplete]="auto">
-              <mat-autocomplete #auto="matAutocomplete">
-                <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
-                  {{option.description}}
+                     name="to"
+                     [formControl]="locationToControl"
+                     [matAutocomplete]="autoTo">
+              <mat-autocomplete #autoTo="matAutocomplete">
+                <mat-option *ngFor="let municipio of filteredOptionsTo | async" [value]="municipio.nome + ' - ' + municipio.microrregiao.mesorregiao.UF.sigla">
+                  {{ municipio.nome }} - {{municipio.microrregiao.mesorregiao.UF.sigla}}
                 </mat-option>
               </mat-autocomplete>
             </mat-form-field>
-
-
-
+  
             <mat-form-field appearance="fill">
               <mat-label>Aeronave</mat-label>
               <mat-select [(value)]="selectedAirship">
@@ -80,12 +80,12 @@
           <section class="fields">
             <mat-form-field appearance="fill">
               <mat-label>Saindo de</mat-label>
-              <input disabled [value]="fromControl.value.description" matInput placeholder="Placeholder">
+              <input disabled [value]="locationFromControl.value" matInput placeholder="Origem">
             </mat-form-field>
   
             <mat-form-field appearance="fill">
               <mat-label>Chegando em</mat-label>
-              <input disabled [value]="fromControl.value.description" matInput placeholder="Placeholder">
+              <input disabled [value]="locationToControl.value" matInput placeholder="Destino">
             </mat-form-field>
 
             <mat-form-field appearance="fill">
@@ -103,12 +103,7 @@
               <mat-icon aria-hidden="false" aria-label="Example home icon">timer</mat-icon>
               <p>{{ statusDriving.duration }}</p>
             </div>
-
-            <div>
-              <p>R$ <span class="hight-bolder">100,00</span></p>
-              <p>Custo Viagem</p>
-            </div>
-
+         
             <div>
               <mat-icon aria-hidden="false" aria-label="Example home icon">moving</mat-icon>
               <p>{{ statusDriving.distance.toFixed(2) }} Km</p>
@@ -121,10 +116,6 @@
               <p>{{statusFlying.duration}}</p>
             </div>
 
-            <div>
-              <p>R$ <span class="hight-bolder">100,00</span></p>
-              <p>Custo Viagem</p>
-            </div>
 
             <div>
               <mat-icon aria-hidden="false" aria-label="Example home icon">moving</mat-icon>
@@ -136,7 +127,7 @@
         </div>
 
         <div class="buttons">
-          <button mat-flat-button color="primary" (click)="updateRoute()">Atualizar</button>
+          <!-- <button mat-flat-button color="primary" (click)="updateRoute()">Atualizar</button> -->
           <button mat-flat-button color="primary" (click)="newRoute()">Nova rota</button>
         </div>
       </div>

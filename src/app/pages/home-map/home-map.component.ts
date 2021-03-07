@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
-import { startWith, map } from 'rxjs/operators';
+import { startWith, map, tap, filter, debounceTime } from 'rxjs/operators';
 import { Airship } from 'src/models/airship.interface';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import * as moment from 'moment';
+import { IbgeService } from 'src/app/shared/ibge.service';
+import { Municipio } from 'src/models/municipio.interface';
 
 
 declare var google: any;
@@ -106,29 +108,48 @@ export class HomeMapComponent implements OnInit {
     }
   ];
 
-  fromControl = new FormControl();
-  myControl = new FormControl();
+  locationFromControl = new FormControl();
+  locationToControl = new FormControl();
   options: string[] = ['One', 'Two', 'Three'];
-  filteredOptions: Observable<string[]>;
+  filteredOptionsFrom: Observable<Municipio[]>;
+  filteredOptionsTo: Observable<Municipio[]>;
 
-  constructor(private _snackBar: MatSnackBar) { }
+  municipios: Municipio[] = [];
+
+  constructor(
+    private _snackBar: MatSnackBar,
+    private ibgeService: IbgeService
+  ) { }
 
   ngOnInit(): void {
+
+    this.ibgeService.citiesByState()
+      .subscribe(municipios => {
+        this.municipios = municipios;
+        console.log({municipios});
+      }, err => {
+        alert('Houve um erro inesperado ao listar os municípios');
+      });
+
     let startPoint = { lat: -25.43615638835874, lng: -49.2589101856207 };
     this.map = new google.maps.Map(document.querySelector('#map'), {
       center: startPoint,
       zoom: 15
     });
 
-    this.filteredOptions = this.myControl.valueChanges
+    this.filteredOptionsFrom = this.locationFromControl.valueChanges
       .pipe(
         startWith(''),
+        debounceTime(500),
+        filter(value => value.length >= 3),
         map(value => this._filter(value))
       );
 
-      this.filteredOptions = this.fromControl.valueChanges
+      this.filteredOptionsTo = this.locationToControl.valueChanges
       .pipe(
         startWith(''),
+        debounceTime(500),
+        filter(value => value.length >= 3),
         map(value => this._filter(value))
       );
 
@@ -143,14 +164,13 @@ export class HomeMapComponent implements OnInit {
     });
   }
 
-  displayFn(place: any): string {
-    return place && place.description ? place.description : '';
+  displayFn(municipio: Municipio): string {
+    return municipio && municipio.nome ? `${municipio.nome} - ${municipio.microrregiao.mesorregiao.UF.sigla}` : '';
   }
 
-  private _filter(value: string): any[] {
-    console.log({value});
+  private _filter(value: string): Municipio[] {
     const filterValue = value ? value.toLowerCase() : '';
-    return this.places.filter(place => place.description.toLowerCase().includes(filterValue));
+    return this.municipios.filter(municipio => municipio.nome.trim().toLowerCase().includes(filterValue));
   }
 
   newRoute() {
@@ -167,12 +187,13 @@ export class HomeMapComponent implements OnInit {
     }, 1000);
   }
 
-  calculateRoute() {
-
-    const from = this.fromControl.value;
-    const to = this.myControl.value;
+  async calculateRoute() {
+    this.isLoading = true;
+    const from = this.locationFromControl.value;
+    const to = this.locationToControl.value;
     console.log({from, to});
     if(!from || !to) {
+      this.isLoading = false;
       this._snackBar.open('Informe o local de partida e de destino.', 'OK',{
         duration: 2000
       });
@@ -181,42 +202,37 @@ export class HomeMapComponent implements OnInit {
     }
 
     if(!this.selectedAirship) {
+      this.isLoading = false;
       this._snackBar.open('Selecione a aeronave', 'OK', {
         duration: 2000,
       });
       return;
     }
 
-    this.directionsRenderer.setMap(this.map);
+    
+    const resultsFrom = await this.ibgeService.geocodeAddress( from );
+    const resultsTo = await this.ibgeService.geocodeAddress( to );
 
-    const start = from.description;
-    const end = to.description;
+    this.directionsRenderer.setMap(this.map);
     const request = {
-      origin: start,
-      destination: end,
+      origin: from,
+      destination: to,
       travelMode: 'DRIVING'
     };
 
-    // new google.maps.Marker({
-    //   map: this.map,
-    //   position: from.position
-    // });
-
-    // new google.maps.Marker({
-    //   map: this.map,
-    //   position: to.position
-    // });
-
 
     this.polylineAirship = new google.maps.Polyline({
-      path: [ from.position, to.position ],
+      path: [ resultsFrom[0].geometry.location, resultsTo[0].geometry.location ],
       strokeColor: '#0A5E2B'
     });
 
     this.statusFlying.distance = google.maps.geometry.spherical.computeLength( this.polylineAirship.getPath() )/1000;
 
     if(this.statusFlying.distance > this.selectedAirship.range) {
-      this._snackBar.open('A aeronave selecionada não tem autonomia necessária para esta viagem.');
+      this.isLoading = false;
+      this._snackBar.open('A aeronave selecionada não tem autonomia necessária para esta viagem.','OK', {
+        duration: 3000
+      });
       return;
     }
 
@@ -233,14 +249,12 @@ export class HomeMapComponent implements OnInit {
         this.statusDriving.duration = directionLeg.duration.text.replace('horas', 'h').replace('minutos', 'min');
         this.statusDriving.distance = directionLeg.distance.value/1000;
         this.directionsRenderer.setDirections(result);
+        this.step = 1;
+        this.isLoading = false;
       }
     });
 
-    this.isLoading = true;
-    setTimeout(() => {
-      this.isLoading = false;
-      this.step = 1;
-    }, 1000);
+    
   }
 
 }
