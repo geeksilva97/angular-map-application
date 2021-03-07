@@ -20,8 +20,7 @@ export class IbgeService {
   }
 
   citiesByState(): Observable<Municipio[]> {
-    return this.http.get(encodeURI('https://servicodados.ibge.gov.br/api/v1/localidades/estados/42|41|33|51|31/municipios'), {
-      // return this.http.get(encodeURI('https://servicodados.ibge.gov.br/api/v1/localidades/estados/42|41|33|51|31/municipios'), {
+    return this.http.get(encodeURI('https://servicodados.ibge.gov.br/api/v1/localidades/estados/42|41|35|33|51|31/municipios'), {
       observe: 'body'
     }).pipe(
       map((municipios: any[]) => {
