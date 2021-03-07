@@ -146,8 +146,7 @@ export class HomeMapComponent implements OnInit {
       this.filteredOptionsTo = this.locationToControl.valueChanges
       .pipe(
         startWith(''),
-        map(value => this._filter(value)),
-        tap(items => console.log({items}))
+        map(value => this._filter(value))
       );
 
 
@@ -167,7 +166,6 @@ export class HomeMapComponent implements OnInit {
 
   private _filter(value: string): Municipio[] {
     const filterValue = value ? value.toLowerCase() : '';
-    console.log({filterValue});
     return this.municipios.filter(municipio => municipio.nome.trim().toLowerCase().includes(filterValue));
   }
 
