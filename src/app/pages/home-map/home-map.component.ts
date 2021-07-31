@@ -126,12 +126,10 @@ export class HomeMapComponent implements OnInit {
     this.ibgeService.citiesByState()
       .subscribe(municipios => {
         this.municipios = municipios;
-        // {from: "Londrina - PR", to: "São Paulo - SP"}
-        this.locationFromControl.setValue('Londrina - PR');
-        this.locationToControl.setValue('São Paulo - SP');
-        this.selectedAirship = this.airships[0];
-        this.calculateRoute();
-        // this.step = 1;
+        // this.locationFromControl.setValue('Londrina - PR');
+        // this.locationToControl.setValue('São Paulo - SP');
+        // this.selectedAirship = this.airships[0];
+        // this.calculateRoute();
       }, err => {
         alert('Houve um erro inesperado ao listar os municípios');
       });
