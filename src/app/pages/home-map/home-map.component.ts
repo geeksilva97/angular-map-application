@@ -190,7 +190,7 @@ export class HomeMapComponent implements OnInit {
     this.isLoading = true;
     const from = this.locationFromControl.value;
     const to = this.locationToControl.value;
-    console.log({from, to});
+
     if(!from || !to) {
       this.isLoading = false;
       this._snackBar.open('Informe o local de partida e de destino.', 'OK',{
@@ -212,7 +212,6 @@ export class HomeMapComponent implements OnInit {
     const resultsFrom = await this.ibgeService.geocodeAddress( from );
     const resultsTo = await this.ibgeService.geocodeAddress( to );
 
-    this.directionsRenderer.setMap(this.map);
     const request = {
       origin: from,
       destination: to,
@@ -235,6 +234,7 @@ export class HomeMapComponent implements OnInit {
       return;
     }
 
+    this.directionsRenderer.setMap(this.map);
     this.polylineAirship.setMap( this.map );
     const d=this.statusFlying.distance/this.selectedAirship.maximumSpeed;
     const duration = moment.duration(d, 'hours');
