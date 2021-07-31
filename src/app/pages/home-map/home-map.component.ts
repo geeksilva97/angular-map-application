@@ -122,11 +122,9 @@ export class HomeMapComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-
     this.ibgeService.citiesByState()
       .subscribe(municipios => {
         this.municipios = municipios;
-        console.log({municipios});
       }, err => {
         alert('Houve um erro inesperado ao listar os municípios');
       });
@@ -188,6 +186,7 @@ export class HomeMapComponent implements OnInit {
   }
 
   async calculateRoute() {
+    const t0 = performance.now();
     this.isLoading = true;
     const from = this.locationFromControl.value;
     const to = this.locationToControl.value;
@@ -252,6 +251,11 @@ export class HomeMapComponent implements OnInit {
         this.step = 1;
         this.isLoading = false;
       }
+
+      const t1 = performance.now();
+      this._snackBar.open(`Operation took ${(t1 - t0).toFixed(2)} milliseconds.`, 'OK', {
+        duration: 5000
+      });
     });
 
     
