@@ -99,6 +99,12 @@
           </section>
 
           <section class="data driving" style="margin-left: -20px; margin-right: -20px;">
+            <!-- <div>
+              
+            </div> -->
+            <figure class="image-container">
+              <img src="assets/car.png" alt="Ícone carro">
+            </figure>
             <div>
               <mat-icon aria-hidden="false" aria-label="Example home icon">timer</mat-icon>
               <p>{{ statusDriving.duration }}</p>
@@ -111,6 +117,9 @@
           </section>
 
           <section class="data flying" style="margin-left: -20px; margin-right: -20px;">
+            <figure class="image-container">
+              <img src="assets/helicopter2.png" alt="Ícone helicoptero">
+            </figure>
             <div>
               <mat-icon aria-hidden="false" aria-label="Example home icon">timer</mat-icon>
               <p>{{statusFlying.duration}}</p>
@@ -121,16 +130,24 @@
               <mat-icon aria-hidden="false" aria-label="Example home icon">moving</mat-icon>
               <p>{{statusFlying.distance.toFixed(2)}} Km</p>
             </div>
+
+            <div *ngIf="statusFlying.countFuel">
+              <h1 style="margin: 0;">3</h1>
+              <p>abstecimentos</p>
+            </div>
           </section>
 
           
         </div>
 
         <div class="buttons">
-          <!-- <button mat-flat-button color="primary" (click)="updateRoute()">Atualizar</button> -->
           <button mat-flat-button color="primary" (click)="newRoute()">Nova rota</button>
         </div>
       </div>
     </mat-card>
   </div>
 </div>
+
+<footer>
+  <div>Icons made by <a href="https://www.flaticon.com/authors/dinosoftlabs" title="DinosoftLabs">DinosoftLabs</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+</footer>

@@ -38,6 +38,7 @@ export class HomeMapComponent implements OnInit {
 
   statusFlying = {
     duration: '',
+    countFuel: 0,
     distance: 0
   };
 
@@ -125,6 +126,12 @@ export class HomeMapComponent implements OnInit {
     this.ibgeService.citiesByState()
       .subscribe(municipios => {
         this.municipios = municipios;
+        // {from: "Londrina - PR", to: "São Paulo - SP"}
+        this.locationFromControl.setValue('Londrina - PR');
+        this.locationToControl.setValue('São Paulo - SP');
+        this.selectedAirship = this.airships[0];
+        this.calculateRoute();
+        // this.step = 1;
       }, err => {
         alert('Houve um erro inesperado ao listar os municípios');
       });
@@ -226,18 +233,25 @@ export class HomeMapComponent implements OnInit {
 
     this.statusFlying.distance = google.maps.geometry.spherical.computeLength( this.polylineAirship.getPath() )/1000;
 
-    if(this.statusFlying.distance > this.selectedAirship.range) {
-      this.isLoading = false;
-      this._snackBar.open('A aeronave selecionada não tem autonomia necessária para esta viagem.','OK', {
-        duration: 3000
-      });
-      return;
-    }
+    // if(this.statusFlying.distance > this.selectedAirship.range) {
+    //   this.isLoading = false;
+    //   this._snackBar.open('A aeronave selecionada não tem autonomia necessária para esta viagem.','OK', {
+    //     duration: 3000
+    //   });
+    //   return;
+    // }
 
     this.polylineAirship.setMap( this.map );
     const d=this.statusFlying.distance/this.selectedAirship.maximumSpeed;
     const duration = moment.duration(d, 'hours');
     this.statusFlying.duration = `${duration.hours()} h ${duration.minutes()} min`
+    this.statusFlying.countFuel = 0;
+
+    if(this.statusFlying.distance > this.selectedAirship.range) {
+      const stopForFuelTimes = Math.ceil( this.statusFlying.distance/this.selectedAirship.range ) - 1;
+      this.statusFlying.duration = '----';
+      this.statusFlying.countFuel = stopForFuelTimes;
+    }
 
 
     this.directionsService.route(request, (result, status) => {
