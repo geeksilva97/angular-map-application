@@ -234,7 +234,6 @@ export class HomeMapComponent implements OnInit {
       return;
     }
 
-    this.directionsRenderer.setMap(this.map);
     this.polylineAirship.setMap( this.map );
     const d=this.statusFlying.distance/this.selectedAirship.maximumSpeed;
     const duration = moment.duration(d, 'hours');
@@ -247,6 +246,7 @@ export class HomeMapComponent implements OnInit {
         const directionLeg = result.routes[0].legs[0];
         this.statusDriving.duration = directionLeg.duration.text.replace('horas', 'h').replace('minutos', 'min');
         this.statusDriving.distance = directionLeg.distance.value/1000;
+        this.directionsRenderer.setMap(this.map);
         this.directionsRenderer.setDirections(result);
         this.step = 1;
         this.isLoading = false;
