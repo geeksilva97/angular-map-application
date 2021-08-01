@@ -193,8 +193,9 @@ export class HomeMapComponent implements OnInit {
   async calculateRoute() {
     const t0 = performance.now();
     this.isLoading = true;
-    const from = this.locationFromControl.value;
-    const to = this.locationToControl.value;
+    let from = this.locationFromControl.value;
+    let to = this.locationToControl.value;
+
 
     if(!from || !to) {
       this.isLoading = false;
@@ -213,14 +214,18 @@ export class HomeMapComponent implements OnInit {
       return;
     }
 
-    
+    // imprecision fixes
+    if(from === 'São Paulo, SP') from = 'R. Jandaia, 218 - Bela Vista, São Paulo - SP, 01316-100, Brazil';
+    if(to === 'São Paulo, SP') to = 'R. Jandaia, 218 - Bela Vista, São Paulo - SP, 01316-100, Brazil';
+    console.log({from, to});
     const resultsFrom = await this.ibgeService.geocodeAddress( from );
     const resultsTo = await this.ibgeService.geocodeAddress( to );
 
     const request = {
       origin: from,
       destination: to,
-      travelMode: 'DRIVING'
+      travelMode: 'DRIVING',
+      language: 'pt-BR'
     };
 
 
@@ -230,14 +235,6 @@ export class HomeMapComponent implements OnInit {
     });
 
     this.statusFlying.distance = google.maps.geometry.spherical.computeLength( this.polylineAirship.getPath() )/1000;
-
-    // if(this.statusFlying.distance > this.selectedAirship.range) {
-    //   this.isLoading = false;
-    //   this._snackBar.open('A aeronave selecionada não tem autonomia necessária para esta viagem.','OK', {
-    //     duration: 3000
-    //   });
-    //   return;
-    // }
 
     this.polylineAirship.setMap( this.map );
     const d=this.statusFlying.distance/this.selectedAirship.maximumSpeed;
@@ -253,8 +250,18 @@ export class HomeMapComponent implements OnInit {
 
 
     this.directionsService.route(request, (result, status) => {
+      console.log({result, status});
+
+      if(status === 'ZERO_RESULTS') {
+        this._snackBar.open('Não foi possível calcular a rota.', 'OK',{
+          duration: 2000
+        });
+        this.newRoute();
+        this.isLoading = false;
+        return;
+      }
+
       if (status == 'OK') {
-        console.log({result, status});
         const directionLeg = result.routes[0].legs[0];
         this.statusDriving.duration = directionLeg.duration.text.replace('horas', 'h').replace('minutos', 'min');
         this.statusDriving.distance = directionLeg.distance.value/1000;

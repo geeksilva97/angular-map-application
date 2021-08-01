@@ -28,7 +28,7 @@
                      [formControl]="locationFromControl"
                      [matAutocomplete]="autoFrom">
               <mat-autocomplete #autoFrom="matAutocomplete">
-                <mat-option *ngFor="let municipio of filteredOptionsFrom | async" [value]="municipio.nome + ' - ' + municipio.microrregiao.mesorregiao.UF.sigla">
+                <mat-option *ngFor="let municipio of filteredOptionsFrom | async" [value]="municipio.nome + ', ' + municipio.microrregiao.mesorregiao.UF.sigla">
                   {{ municipio.nome }} - {{municipio.microrregiao.mesorregiao.UF.sigla}}
                 </mat-option>
               </mat-autocomplete>
@@ -45,7 +45,7 @@
                      [formControl]="locationToControl"
                      [matAutocomplete]="autoTo">
               <mat-autocomplete #autoTo="matAutocomplete">
-                <mat-option *ngFor="let municipio of filteredOptionsTo | async" [value]="municipio.nome + ' - ' + municipio.microrregiao.mesorregiao.UF.sigla">
+                <mat-option *ngFor="let municipio of filteredOptionsTo | async" [value]="municipio.nome + ', ' + municipio.microrregiao.mesorregiao.UF.sigla">
                   {{ municipio.nome }} - {{municipio.microrregiao.mesorregiao.UF.sigla}}
                 </mat-option>
               </mat-autocomplete>
